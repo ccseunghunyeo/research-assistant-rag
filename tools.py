@@ -8,6 +8,11 @@ from langchain_community.tools import WikipediaQueryRun, DuckDuckGoSearchRun
 from langchain_community.utilities import WikipediaAPIWrapper
 from langchain_classic.tools import Tool
 from datetime import datetime
+import wikipedia
+
+#Wikipedia blocks (HTTP 429) requests that use the wikipedia library's generic User-Agent.
+#Wikimedia asks every client to identify itself with a name and a link, so we set one here.
+wikipedia.set_user_agent("ResearchAssistantRAG/1.0 (https://github.com/ccseunghunyeo/research-assistant-rag)")
 
 
 #def save_to_txt(data: str, filename: str = "research_output.txt") is a function that takes in research data as a string and an optional filename (defaulting to "research_output.txt").
@@ -40,6 +45,15 @@ search_tool = Tool(
     description="Search the web for information",
 )
 
+#search_tool wraps the DuckDuckGo search above in a Tool so the agent knows its name ("search") and when to use it (description).
+#The description matters: the LLM reads it to decide which tool to call.
+
+#api_wrapper = WikipediaAPIWrapper(top_k_results=1, doc_content_chars_max=1000) sets up the Wikipedia connection.
+# top_k_results=1 means only the single best-matching article is fetched.
+# doc_content_chars_max=1000 cuts the article to 1000 characters, which keeps token usage (and cost) low.
+#wiki_tool = WikipediaQueryRun(api_wrapper=api_wrapper) turns that wrapper into a tool the agent can call.
+#Together, search_tool and wiki_tool are the "retrieval" part of RAG (Retrieval-Augmented Generation):
+# they fetch real text from the web so the LLM answers from sources instead of only from memory.
 api_wrapper = WikipediaAPIWrapper(top_k_results=1, doc_content_chars_max=1000)
 wiki_tool = WikipediaQueryRun(api_wrapper=api_wrapper)
 
