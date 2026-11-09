@@ -1,0 +1,13 @@
+# Secrets - never commit API keys
+.env
+
+# Python / virtual environment
+.venv/
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
+
+# Generated research output
+research_output.txt
